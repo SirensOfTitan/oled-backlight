@@ -17,13 +17,12 @@ func getCurrentBacklight(brightnessPath string) string {
     return strings.TrimSuffix(string(data), "\n")
 }
 
-func getCurrentBacklightPercentage(backlightNumber int) string {
-    max := 2000.0
+func getCurrentBacklightPercentage(max int, backlightNumber int) string {
     if backlightNumber == 0 {
         return "0%"
     }
     backlightNumberFloat := float64(backlightNumber)
-    percentage := int((backlightNumberFloat / max) * 100)
+    percentage := int((backlightNumberFloat / float64(max)) * 100)
     return strconv.Itoa(percentage)
 }
 
@@ -54,7 +53,7 @@ func main() {
     maxBrightness, _ = strconv.Atoi(getCurrentBacklight(maxBrightnessPath))
     currentBrightness, _ = strconv.Atoi(getCurrentBacklight(brightnessPath))
     if os.Args[1] == "current" {
-        toPrint := getCurrentBacklightPercentage(currentBrightness)
+        toPrint := getCurrentBacklightPercentage(maxBrightness, currentBrightness)
         if len(os.Args) == 3 && os.Args[2] == "--pretty" {
             toPrint = "\uF0EB " + toPrint + "%"
         }
@@ -83,7 +82,7 @@ func main() {
        os.Exit(1)
     }
 
-    fmt.Println(getCurrentBacklightPercentage(setBrightness))
+    fmt.Println(getCurrentBacklightPercentage(maxBrightness, setBrightness))
     f, err := os.Create(brightnessPath)
     if err != nil {
         fmt.Println(err)
