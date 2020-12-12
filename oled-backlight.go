@@ -42,14 +42,16 @@ func help() {
 }
 
 func main() {
-    var currentBrightness, setBrightness int
+    var currentBrightness, maxBrightness, setBrightness int
     brightnessPath := "/sys/class/backlight/intel_backlight/brightness"
+    maxBrightnessPath := "/sys/class/backlight/intel_backlight/max_brightness"
 
     if len(os.Args) < 2 {
         help()
         os.Exit(1)
     }
 
+    maxBrightness, _ = strconv.Atoi(getCurrentBacklight(maxBrightnessPath))
     currentBrightness, _ = strconv.Atoi(getCurrentBacklight(brightnessPath))
     if os.Args[1] == "current" {
         toPrint := getCurrentBacklightPercentage(currentBrightness)
@@ -59,8 +61,8 @@ func main() {
         fmt.Println(toPrint)
         os.Exit(0)
     } else if os.Args[1] == "+" {
-        if currentBrightness >= 2000 {
-            setBrightness = 2000
+        if currentBrightness >= maxBrightness {
+            setBrightness = maxBrightness
         } else if currentBrightness < 100 {
             setBrightness = currentBrightness + 20
         } else {
